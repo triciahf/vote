@@ -1,0 +1,30 @@
+name: Trivy Vulnerability Scan
+ 
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+ 
+jobs:
+  trivy:
+    name: Run Trivy Scan
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+ 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+ 
+    - name: Build Docker Image
+      run: docker build -t vote:test .
+ 
+    - name: Run Trivy Scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'vote:test'
+        format: 'table'
+        exit-code: '0'
+        severity: 'CRITICAL,HIGH'
